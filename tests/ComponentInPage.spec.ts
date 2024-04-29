@@ -1,16 +1,18 @@
 import test from "@playwright/test";
 import HomePage from "../pages/HomePage";
-import SearchComponent from "../components/SearchComponents";
+import HeaderComponent from "../components/global/header/HeaderComponent";
+import SearchComponent from "../components/global/header/SearchComponents";
 
 test('Test Component In Page', async ({ page }) => {
     await page.goto('https://demowebshop.tricentis.com');
     const homepage: HomePage = new HomePage(page);
-    const searchComponent: SearchComponent = homepage.searchComponent();
+    const headerComponent: HeaderComponent = homepage.headerComponent();
+    const searchComponent: SearchComponent = headerComponent.searchComponent();
 
     await searchComponent.searchBox().click();
     await searchComponent.searchBox().fill('laptop');
-    await searchComponent.searchBox().click();
+    await searchComponent.searchBtn().click();
 
     // Debug for ONLY
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(5000)
 })
