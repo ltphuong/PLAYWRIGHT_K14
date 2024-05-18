@@ -89,8 +89,7 @@ test.only('Checking element status and handle dynamic status', async ({ page }) 
     console.log(`Is checkbox enabled: ${isEnabled}`);
     console.log(`Is checkbox selected: ${isSelected}`);
 
-    // For debug only
-    await page.waitForTimeout(1000);
+
 
     if (!isSelected) {
         await checkboxELe.click();
