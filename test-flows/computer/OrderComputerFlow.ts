@@ -7,28 +7,46 @@ export default class OrderComputerFlow {
     private totalPrice: number;
     private productQuantity: number;
 
-    constructor(private page: Page, private computerComponentClass: ComputerComponentConstructor<ComputerEssentialComponent>) {
+    constructor(
+        private readonly page: Page,
+        private readonly computerComponentClass: ComputerComponentConstructor<ComputerEssentialComponent>,
+        private readonly computerData: any
+    ) {
         this.page = page;
         this.computerComponentClass = computerComponentClass;
+        this.computerData = computerData;
     }
 
     async buildCompSpecAndAddToCart(): Promise<void> {
+        // Build computer spec
         const computerDetailsPage: ComputerDetailsPage = new ComputerDetailsPage(this.page);
         const computerComp = computerDetailsPage.computerComp(this.computerComponentClass);
         await computerComp.unselectDefaultOptions();
-        const selectedProcessorText = await computerComp.selectProcessorType("2.2 GHz");
-        const selectedRAMText = await computerComp.selectRAMType("4GB");
-        const selectedHDDText = await computerComp.selectHDDType("400 GB");
-        //await computerComp.selectSoftwareType("Image Viever");
+        const selectedProcessorText = await computerComp.selectProcessorType(this.computerData.processorType);
+        const selectedRAMText = await computerComp.selectRAMType(this.computerData.ram);
+        const selectedHDDText = await computerComp.selectHDDType(this.computerData.hdd);
+        const selectedSoftwareText = await computerComp.selectSoftwareType(this.computerData.software);
+
+        let additionalOsPrice = 0;
+        if (this.computerData.os) {
+            const selectedOsText = await computerComp.selectOsType(this.computerData.os);
+            additionalOsPrice = this.extractAdditionalPrice(selectedOsText)
+        }
 
         console.log(`selectedProcessorText: ${this.extractAdditionalPrice(selectedProcessorText)}`);
         console.log(`selectedRAMText: ${this.extractAdditionalPrice(selectedRAMText)}`);
         console.log(`selectedHDDText: ${this.extractAdditionalPrice(selectedHDDText)}`);
+        console.log(`selectedSoftwareText: ${this.extractAdditionalPrice(selectedSoftwareText)}`);
 
+
+
+        // Calculate current product's price
         const basePrice = await computerComp.getProductPrice();
         const additionalPrices = this.extractAdditionalPrice(selectedProcessorText)
             + this.extractAdditionalPrice(selectedRAMText)
-            + this.extractAdditionalPrice(selectedHDDText);
+            + this.extractAdditionalPrice(selectedHDDText)
+            + this.extractAdditionalPrice(selectedSoftwareText)
+            + additionalOsPrice;
 
 
         this.productQuantity = await computerComp.getProductQuantity();

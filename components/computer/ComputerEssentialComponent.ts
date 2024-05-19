@@ -22,6 +22,10 @@ export default abstract class ComputerEssentialComponent extends BaseItemDetails
         return await this.selectCompOption(type);
     }
 
+    public async selectOsType(type: string): Promise<string> {
+        return await this.selectCompOption(type);
+    }
+
     protected async selectCompOption(type: string): Promise<string> {
         const selectorValue = `//label[contains(text(), "${type}")]`;
         const optionEles: Locator[] = await this.component.locator(selectorValue).all();
